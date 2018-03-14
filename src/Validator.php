@@ -214,11 +214,16 @@ class Validator
             return true;
         }
 
-        if (in_array($fpi, $this->fpiList) && !$hasUri) {
+        if (!$hasFpi && self::DOCTYPE_HTML5_LEGACY_COMPAT_URI === $uri) {
             return true;
         }
 
-        if (!$hasFpi && self::DOCTYPE_HTML5_LEGACY_COMPAT_URI === $uri) {
+        $hasValidFpi = in_array($fpi, $this->fpiList);
+        if (!$hasValidFpi) {
+            return false;
+        }
+
+        if ($hasValidFpi && !$hasUri) {
             return true;
         }
 

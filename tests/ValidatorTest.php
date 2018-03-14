@@ -78,20 +78,55 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider isValidFailureIncorrectFpiDataProvider
+     * @dataProvider isValidFailureIncorrectFpiStrictModeDataProvider
      *
      * @param HtmlDocumentType $documentType
      */
-    public function testIsValidFailureIncorrectFpi(HtmlDocumentType $documentType)
+    public function testIsValidFailureIncorrectFpiStrictMode(HtmlDocumentType $documentType)
     {
         $validator = new Validator();
+
+        $this->assertFalse($validator->isValid($documentType));
+    }
+
+    /**
+     * @dataProvider isValidFailureIncorrectFpiRelaxedModeDataProvider
+     *
+     * @param HtmlDocumentType $documentType
+     */
+    public function testIsValidFailureIncorrectFpiRelaxedMode(HtmlDocumentType $documentType)
+    {
+        $validator = new Validator();
+        $validator->setMode(Validator::MODE_IGNORE_FPI_URI_VALIDITY);
+
         $this->assertFalse($validator->isValid($documentType));
     }
 
     /**
      * @return array
      */
-    public function isValidFailureIncorrectFpiDataProvider()
+    public function isValidFailureIncorrectFpiRelaxedModeDataProvider()
+    {
+        $dataSet = $this->isValidFailureIncorrectFpiStrictModeDataProvider();
+
+        foreach ($dataSet as $key => $testData) {
+            /* @var HtmlDocumentType $documentType */
+            $documentType = $testData['documentType'];
+
+            $uri = $documentType->getUri();
+
+            if (null === $uri) {
+                unset($dataSet[$key]);
+            }
+        }
+
+        return $dataSet;
+    }
+
+    /**
+     * @return array
+     */
+    public function isValidFailureIncorrectFpiStrictModeDataProvider()
     {
         $dataSet = $this->docTypeDataProvider();
 
